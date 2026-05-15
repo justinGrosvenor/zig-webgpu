@@ -1,0 +1,40 @@
+.{
+    .fingerprint = 0x6980a10804674de3,
+    .name = .zig_webgpu,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.16.0",
+    .paths = .{
+        "src",
+        "build.zig",
+        "build.zig.zon",
+        "LICENSE",
+        "README.md",
+    },
+    .dependencies = .{
+        .wgpu_native_macos_aarch64 = .{
+            .url = "https://github.com/gfx-rs/wgpu-native/releases/download/v29.0.0.0/wgpu-macos-aarch64-release.zip",
+            .hash = "N-V-__8AAP25fAK9uyvxPl28uoHYZhzGkEqs3Z34Dz4IN5Vk",
+            .lazy = true,
+        },
+        .wgpu_native_macos_x86_64 = .{
+            .url = "https://github.com/gfx-rs/wgpu-native/releases/download/v29.0.0.0/wgpu-macos-x86_64-release.zip",
+            .hash = "N-V-__8AAF0KeQIPjq2ZGVZ2r_mwwK6lDxHhxsko_HfbMLqO",
+            .lazy = true,
+        },
+        .wgpu_native_linux_x86_64 = .{
+            .url = "https://github.com/gfx-rs/wgpu-native/releases/download/v29.0.0.0/wgpu-linux-x86_64-release.zip",
+            .hash = "N-V-__8AAO3k0AME91yU7p-wkAjsf9Fudl9z8rFKgyS-aTY9",
+            .lazy = true,
+        },
+        .wgpu_native_linux_aarch64 = .{
+            .url = "https://github.com/gfx-rs/wgpu-native/releases/download/v29.0.0.0/wgpu-linux-aarch64-release.zip",
+            .hash = "N-V-__8AAD8s1gO92sAkRd4lIm3Sow3jGcX0f6ty2I298rxL",
+            .lazy = true,
+        },
+        .wgpu_native_windows_x86_64 = .{
+            .url = "https://github.com/gfx-rs/wgpu-native/releases/download/v29.0.0.0/wgpu-windows-x86_64-msvc-release.zip",
+            .hash = "N-V-__8AAP4LGAR-T-GjxNppMymyVapVHz-QnVYrZWHEXrgT",
+            .lazy = true,
+        },
+    },
+}
