@@ -13,6 +13,43 @@ pub const Device = struct {
         return .{ .handle = c.wgpuDeviceCreateShaderModule(self.handle, descriptor) };
     }
 
+    pub fn createShaderModuleWGSL(self: Device, label: []const u8, code: []const u8) gpu.ShaderModule {
+        var source = gpu.ShaderSourceWGSL{
+            .chain = .{ .next = null, .sType = c.WGPUSType_ShaderSourceWGSL },
+            .code = gpu.stringView(code),
+        };
+        return self.createShaderModule(&.{
+            .nextInChain = @ptrCast(&source.chain),
+            .label = gpu.stringView(label),
+        });
+    }
+
+    pub fn createShaderModuleSPIRV(self: Device, label: []const u8, code: []const u32) gpu.ShaderModule {
+        var source = gpu.ShaderSourceSPIRV{
+            .chain = .{ .next = null, .sType = c.WGPUSType_ShaderSourceSPIRV },
+            .codeSize = @intCast(code.len),
+            .code = code.ptr,
+        };
+        return self.createShaderModule(&.{
+            .nextInChain = @ptrCast(&source.chain),
+            .label = gpu.stringView(label),
+        });
+    }
+
+    pub fn createShaderModuleGLSL(self: Device, label: []const u8, stage: c.WGPUShaderStage, code: []const u8) gpu.ShaderModule {
+        var source = gpu.ShaderSourceGLSL{
+            .chain = .{ .next = null, .sType = @intCast(c.WGPUNativeSType_ShaderSourceGLSL) },
+            .stage = stage,
+            .code = gpu.stringView(code),
+            .defineCount = 0,
+            .defines = null,
+        };
+        return self.createShaderModule(&.{
+            .nextInChain = @ptrCast(&source.chain),
+            .label = gpu.stringView(label),
+        });
+    }
+
     pub fn createRenderPipeline(self: Device, descriptor: *const c.WGPURenderPipelineDescriptor) gpu.RenderPipeline {
         return .{ .handle = c.wgpuDeviceCreateRenderPipeline(self.handle, descriptor) };
     }

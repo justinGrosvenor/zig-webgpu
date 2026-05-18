@@ -1,4 +1,5 @@
 const std = @import("std");
+pub const shader_compiler = @import("src/shader_compiler.zig");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
@@ -49,6 +50,34 @@ pub fn build(b: *std.Build) void {
     const run_example = b.addRunArtifact(example);
     const example_step = b.step("example", "Run triangle example");
     example_step.dependOn(&run_example.step);
+
+    // --- GLSL triangle example (requires glslc from Vulkan SDK) ---
+    const glsl_module = b.createModule(.{
+        .root_source_file = b.path("examples/glsl_triangle.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    glsl_module.addImport("gpu", gpu_module);
+    addWgpuToModule(glsl_module, wgpu_dep);
+    addOptions(glsl_module, headless);
+    if (!headless) linkPlatform(glsl_module, target);
+
+    shader_compiler.add(glsl_module, "vert_spv", .{
+        .path = b.path("examples/shaders/triangle.vert"),
+        .stage = .vertex,
+    });
+    shader_compiler.add(glsl_module, "frag_spv", .{
+        .path = b.path("examples/shaders/triangle.frag"),
+        .stage = .fragment,
+    });
+
+    const glsl_example = b.addExecutable(.{
+        .name = "glsl_triangle",
+        .root_module = glsl_module,
+    });
+    const run_glsl = b.addRunArtifact(glsl_example);
+    const glsl_step = b.step("glsl", "Run GLSL triangle example (requires glslc)");
+    glsl_step.dependOn(&run_glsl.step);
 
     // --- headless compute example ---
     const compute_module = b.createModule(.{

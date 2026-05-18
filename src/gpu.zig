@@ -30,6 +30,7 @@ pub const SurfaceTexture = @import("surface.zig").SurfaceTexture;
 pub const Window = @import("window.zig").Window;
 pub const Input = @import("input.zig").Input;
 pub const Key = @import("input.zig").Key;
+pub const spirv = @import("spirv.zig");
 
 // Struct types
 pub const Color = c.WGPUColor;
@@ -140,6 +141,10 @@ pub const LogLevel = c.WGPULogLevel;
 
 // Chained struct types
 pub const ShaderSourceWGSL = c.WGPUShaderSourceWGSL;
+pub const ShaderSourceSPIRV = c.WGPUShaderSourceSPIRV;
+pub const ShaderSourceGLSL = c.WGPUShaderSourceGLSL;
+pub const ShaderDefine = c.WGPUShaderDefine;
+pub const NativeSType = c.WGPUNativeSType;
 pub const SurfaceSourceMetalLayer = c.WGPUSurfaceSourceMetalLayer;
 pub const SurfaceSourceWindowsHWND = c.WGPUSurfaceSourceWindowsHWND;
 pub const SurfaceSourceXlibWindow = c.WGPUSurfaceSourceXlibWindow;
