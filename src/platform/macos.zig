@@ -84,6 +84,9 @@ pub const Window = struct {
         const app = msg(class("NSApplication"), sel("sharedApplication"));
 
         _ = msgWithInt(app, sel("setActivationPolicy:"), 0);
+        // Required for a manually-driven event loop (no [NSApp run]) to
+        // deliver keyboard events to the window.
+        _ = msg(app, sel("finishLaunching"));
 
         const alloc = msg(class("NSWindow"), sel("alloc"));
 
@@ -141,6 +144,15 @@ pub const Window = struct {
             10 => { // NSEventTypeKeyDown
                 if (mapKeyCode(getUShort(event, sel("keyCode")))) |key|
                     self.input.handleKeyDown(key);
+                // Capture typed characters (layout/shift aware) for text input.
+                const chars = msg(event, sel("characters"));
+                if (chars != null) {
+                    const utf8 = msg(chars, sel("UTF8String"));
+                    if (utf8) |p| {
+                        const cstr: [*:0]const u8 = @ptrCast(p);
+                        self.input.appendText(std.mem.span(cstr));
+                    }
+                }
             },
             11 => { // NSEventTypeKeyUp
                 if (mapKeyCode(getUShort(event, sel("keyCode")))) |key|

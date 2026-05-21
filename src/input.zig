@@ -52,6 +52,11 @@ pub const Input = struct {
     /// per platform or accumulate-and-threshold themselves.
     scroll_y: f32 = 0,
 
+    /// Printable ASCII characters typed this frame, layout/shift aware. Reset
+    /// each `beginFrame`. Pair with the `backspace` key for text entry.
+    text_buf: [32]u8 = undefined,
+    text_len: usize = 0,
+
     pub fn isDown(self: Input, key: Key) bool {
         return self.keys_down[@intFromEnum(key)];
     }
@@ -76,6 +81,7 @@ pub const Input = struct {
         self.mouse_middle_pressed = false;
         self.mouse_middle_released = false;
         self.scroll_y = 0;
+        self.text_len = 0;
     }
 
     pub fn handleKeyDown(self: *Input, key: Key) void {
@@ -88,5 +94,21 @@ pub const Input = struct {
         const idx = @intFromEnum(key);
         self.keys_down[idx] = false;
         self.keys_released[idx] = true;
+    }
+
+    /// Append typed characters, keeping only printable ASCII. Called by the
+    /// platform layer; consumers read `typedText`.
+    pub fn appendText(self: *Input, bytes: []const u8) void {
+        for (bytes) |b| {
+            if (b >= 0x20 and b < 0x7F and self.text_len < self.text_buf.len) {
+                self.text_buf[self.text_len] = b;
+                self.text_len += 1;
+            }
+        }
+    }
+
+    /// Printable characters typed this frame.
+    pub fn typedText(self: Input) []const u8 {
+        return self.text_buf[0..self.text_len];
     }
 };
