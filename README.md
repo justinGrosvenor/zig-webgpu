@@ -11,7 +11,11 @@ API — descriptor types are direct re-exports of `WGPU*` C structs so you can
 read the WebGPU spec and the wgpu-native headers without translating. The
 public surface may tighten before 1.0; treat naming changes as breaking.
 
-Targets Zig `0.16`.
+Targets Zig `0.16` (stable).
+
+Developed and runtime-tested on macOS/arm64. The Linux and Windows backends
+cross-compile cleanly and are exercised by the same code paths, but have not
+been run on hardware — treat them as untested rather than broken.
 
 ## Platforms
 
@@ -27,12 +31,17 @@ Other targets compile with `-Dheadless=true` if you supply wgpu-native yourself.
 
 ## Install
 
-`build.zig.zon`:
+```bash
+zig fetch --save=zig_webgpu \
+  https://github.com/justinGrosvenor/zig-webgpu/archive/refs/tags/v0.1.0.tar.gz
+```
+
+That writes the `url` and `hash` into your `build.zig.zon`:
 
 ```zig
 .dependencies = .{
     .zig_webgpu = .{
-        .url = "https://example.com/zig-webgpu/archive/<tag>.tar.gz",
+        .url = "https://github.com/justinGrosvenor/zig-webgpu/archive/refs/tags/v0.1.0.tar.gz",
         .hash = "...",
     },
 },
