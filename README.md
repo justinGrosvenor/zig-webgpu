@@ -100,10 +100,58 @@ pub fn main() !void {
 }
 ```
 
-Two runnable examples are in `examples/`:
+Three runnable examples are in `examples/`:
 
 - `zig build example` — windowed triangle (macOS / Windows / Linux)
+- `zig build glsl` — same triangle from GLSL sources (requires `glslc` on PATH)
 - `zig build compute` — headless compute pass
+
+## Window and input
+
+`gpu.Window` wraps the platform layer and hands back a surface:
+
+```zig
+var window = try gpu.Window.init(.{});
+defer window.deinit();
+
+const surface = window.createSurface(instance) orelse return error.NoSurface;
+
+while (!window.shouldClose()) {
+    window.pollEvents();
+    const in = window.input();
+    if (in.isPressed(.escape)) break;
+    // ... render ...
+}
+```
+
+`Input` tracks per-frame keyboard state — `isDown` (held), `isPressed` and
+`isReleased` (edge-triggered this frame) — plus `typedText()` for accumulated
+UTF-8 text input. `Window.isHeadless()` reports whether the build has native
+windowing compiled in.
+
+## Shaders
+
+Shader modules can be created from three source forms:
+
+```zig
+const wgsl = device.createShaderModuleWGSL("name", wgsl_source);
+const spv  = device.createShaderModuleSPIRV("name", spirv_words);
+const glsl = device.createShaderModuleGLSL("name", gpu.c.WGPUShaderStage_Fragment, glsl_source);
+```
+
+`gpu.spirv.load(device, label, spv_bytes)` does the byte-slice to `u32`-word
+conversion at comptime and hands off to `createShaderModuleSPIRV`, which is
+usually more convenient than passing words yourself:
+
+```zig
+const frag = gpu.spirv.load(device, "triangle frag", @import("frag_spv").bytes);
+```
+
+`src/shader_compiler.zig` drives ahead-of-time GLSL compilation — it runs
+`glslc` as a build step and exposes the SPIR-V as an importable module. This
+repo's own `build.zig` uses it to build the `glsl` example; see that wiring in
+`build.zig` and `examples/glsl_triangle.zig`. It is not currently re-exported
+for downstream consumers, so using it from another package means vendoring it.
 
 ## Conventions
 
