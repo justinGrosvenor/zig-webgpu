@@ -4,3 +4,4 @@ zig-out/
 .idea/
 .vscode/
 *.o
+zig-pkg/
